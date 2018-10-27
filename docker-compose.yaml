@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  db:
+    image: "rethinkdb:2.3.6"
+    ports:
+    # For administration console
+    - "8080:8080"
+    # For restore from dump
+    - "28015:28015"
+  api:
+    build: ./api
+    ports:
+      - "5000:5000"
+    environment:
+      - RDB_HOST=db
+      - RDB_PORT=28015
+      - RDB_DATABASE_NAME=pillula
+      - JWT_SECRET_KEY=12345
+    volumes:
+      - ./api/src/:/src:ro
+    depends_on:
+    - db
