@@ -11,3 +11,6 @@ RDB_CONFIG = {
 
 def db_connecton():
     return r.connect(host=RDB_CONFIG['host'], port=RDB_CONFIG['port'], db=RDB_CONFIG['db'])
+
+def db_operation_success(res):
+    return res['errors'] == 0

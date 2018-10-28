@@ -19,7 +19,7 @@ def send_sms_code(phone_number, sms_code):
     # raise NotImplementedError
 
 
-@api.route('/users', methods=['POST'])
+@api.route('/auth', methods=['POST'])
 def users():
     if not request.is_json:
         return abort(400, 'Missing JSON in request')
@@ -47,7 +47,7 @@ def users():
     })
 
 
-@api.route('/users/request_sms_code', methods=['POST'])
+@api.route('/auth/request_sms_code', methods=['POST'])
 def request_sms_code():
     if not request.is_json:
         return jsonify({'error': 'Missing JSON in request.'}), 400
@@ -67,7 +67,7 @@ def request_sms_code():
     })
 
 
-@api.route('/users/verify', methods=['POST'])
+@api.route('/auth/verify', methods=['POST'])
 def verify():
     if not request.is_json:
         return jsonify({'error': 'Missing JSON in request.'}), 400
@@ -78,7 +78,7 @@ def verify():
         return jsonify({'error': '\'phone_number\' is incorrect.'}), 400
     sms_code = request.json.get('sms_code')
     with db_connecton() as conn:
-        is_good = r.table('users').get(phone_number).get_field('last_sms_code').eq(sms_code).run(conn)
+        is_good = r.table('users').get(phone_number)['last_sms_code'].eq(sms_code).run(conn)
     if not is_good:
         return jsonify({'error': 'Bad \'phone_number\' of \'sms_code\'.'}), 401
     access_token = create_access_token(identity=phone_number, expires_delta=timedelta(days=365))
